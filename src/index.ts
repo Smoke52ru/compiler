@@ -1,3 +1,13 @@
-const str: string = "ТЕСТ";
+import Lexer from "./lexer";
 
-console.log(str);
+
+const code =
+  `var:= true;
+  if var then var := false
+  else var := (true and true);`
+
+const lexer = new Lexer(code);
+
+lexer.lexAnalysis();
+
+console.log(lexer.tokenList);
