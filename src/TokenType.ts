@@ -9,8 +9,6 @@ export default class TokenType {
 }
 
 export const tokenTypesList = {
-  'NUMBER': new TokenType('NUMBER', '[0-9]*'),
-  'ID': new TokenType('ID', '[a-z]*'),
   'SEMICOLON': new TokenType('SEMICOLON', ';'),
   'SPACE': new TokenType('SPACE', '[ \\n\\t\\r]'),
   'ASSIGN': new TokenType('ASSIGN', ':='),
@@ -22,4 +20,9 @@ export const tokenTypesList = {
   'OR': new TokenType('OR', 'or'),
   'XOR': new TokenType('XOR', 'xor'),
   'AND': new TokenType('AND', 'and'),
+  'MINUS': new TokenType('MINUS', '\\-'),
+  'PLUS': new TokenType('MINUS', '\\+'),
+  'LOG': new TokenType('PRINT', 'print'),
+  'NUMBER': new TokenType('NUMBER', '[0-9]*'),
+  'VARIABLE': new TokenType('VARIABLE', '[a-z]*'),
 }

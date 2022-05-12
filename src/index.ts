@@ -1,13 +1,20 @@
 import Lexer from "./lexer";
+import Parser from "./parser";
 
 
 const code =
-  `var:= true;
-  if var then var := false
-  else var := (true and true);`
+  `var := 1+2;
+  print var;
+  `
 
 const lexer = new Lexer(code);
 
 lexer.lexAnalysis();
 
-console.log(lexer.tokenList);
+console.log(lexer.tokenList.map((token, index) => `${index}. <${token.type.name}>${token.text}`));
+
+const parser = new Parser(lexer.tokenList);
+
+const rootNode = parser.parseCode();
+
+parser.run(rootNode);
