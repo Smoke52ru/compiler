@@ -22,11 +22,11 @@ export const tokenTypesList = {
   'AND': new TokenType('AND', 'and'),
   'FOR': new TokenType('FOR', 'for'),
   'WHILE': new TokenType('WHILE', 'while'),
+  'NUMBER': new TokenType('NUMBER', '-?[0-9]+'),
   'MINUS': new TokenType('MINUS', '\\-'),
   'PLUS': new TokenType('PLUS', '\\+'),
   'SWITCH': new TokenType('SWITCH', 'switch'),
   'LOG': new TokenType('PRINT', 'print'),
   'STRING': new TokenType('STRING', '".*"'),
-  'NUMBER': new TokenType('NUMBER', '[0-9]*'),
   'VARIABLE': new TokenType('VARIABLE', '[a-zA-Z_]+[a-zA-Z0-9_]*'),
 }

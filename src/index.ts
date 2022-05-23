@@ -4,7 +4,7 @@ import Parser from "./parser";
 
 const code =
   `var:=1 -(1+9);
-  var1:= (1+var) + 999;
+  var1:= (-1+var) + 999;
   
   print var;
   print var1;
