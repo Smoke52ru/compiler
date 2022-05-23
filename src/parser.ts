@@ -6,6 +6,7 @@ import NumberNode from "./AST/NumberNode";
 import VariableNode from "./AST/VariableNode";
 import BinOperationNode from "./AST/BinOperationNode";
 import UnarOperationNode from "./AST/UnarOperationNode";
+import StringNode from "./AST/StringNode";
 
 export default class Parser {
   tokens: Token[];
@@ -51,6 +52,10 @@ export default class Parser {
   parsePrint(): ExpressionNode {
     const token = this.match(tokenTypesList.LOG);
     if (token) {
+      let operand = this.match(tokenTypesList.STRING)
+      if (operand)
+        return new UnarOperationNode(token, new StringNode(operand));
+
       return new UnarOperationNode(token, this.parseFormula());
     }
     throw new Error(`Ожидается унарный оператор ${tokenTypesList.LOG.name} на позиции ${this.pos}`);
@@ -77,52 +82,55 @@ export default class Parser {
     return leftNode;
   }
 
-  /*parseExpression(): ExpressionNode {
-    if (this.match(tokenTypesList.LOG)) {
-      const printNode = this.parsePrint();
-      return printNode;
-    }
-
-    this.pos -= 1;
-    let variableNode = this.parseVariableOrNumber();
-
-    if (this.match(tokenTypesList.VARIABLE)) {
-      const assignOperator = this.match(tokenTypesList.ASSIGN);
-      if (assignOperator) {
-        const rightFormulaNode = this.parseFormula();
-        const binaryNode = new BinOperationNode(assignOperator, variableNode, rightFormulaNode);
-        return binaryNode;
+  /*  parseCondition(): ExpressionNode {
+      let leftNode = this.parseParentheses();
+      let operator = this.match(tokenTypesList.OR, tokenTypesList.XOR);
+      while (operator) {
+        const rightNode = this.parseParentheses();
+        leftNode = new BinOperationNode(operator, leftNode, rightNode);
+        operator = this.match(tokenTypesList.OR, tokenTypesList.XOR);
       }
-    }
-    throw new Error(`Неожиданный токен на позиции ${this.pos}`);
-  }*/
+      return leftNode;
+    }*/
+
+
   parseExpression(): ExpressionNode {
-    if (this.match(tokenTypesList.VARIABLE) == null) {
-      return this.parsePrint();
+    switch (true) {
+      case !!this.match(tokenTypesList.LOG):
+        this.pos -= 1;
+        return this.parsePrint();
+      case !!this.match(tokenTypesList.VARIABLE):
+        this.pos -= 1;
+        let variableNode = this.parseVariableOrNumber();
+        const assignOperator = this.match(tokenTypesList.ASSIGN);
+        if (assignOperator) {
+          const rightFormulaNode = this.parseFormula();
+          return new BinOperationNode(assignOperator, variableNode, rightFormulaNode);
+        }
+        throw new Error(`Неожиданный токен на позиции ${this.pos}`);
+      default:
+        throw new Error(`Неожиданный токен на позиции ${this.pos}`);
     }
-    this.pos -= 1;
-    let variableNode = this.parseVariableOrNumber();
-    const assignOperator = this.match(tokenTypesList.ASSIGN);
-    if (assignOperator != null) {
-      const rightFormulaNode = this.parseFormula();
-      return new BinOperationNode(assignOperator, variableNode, rightFormulaNode);
-    }
-    throw new Error(`После переменной ожидается оператор присвоения на позиции ${this.pos}`);
   }
 
   parseCode(): ExpressionNode {
     const root = new StatementNode();
     while (this.pos < this.tokens.length) {
       const codeStringNode = this.parseExpression();
-      this.require(tokenTypesList.SEMICOLON); // Ожидаем точку с запятой в конце каждого выражения
-      root.addNode(codeStringNode);
+
+      if (this.match(tokenTypesList.SEMICOLON))
+        root.addNode(codeStringNode);
     }
     return root;
   }
 
+
   run(node: ExpressionNode): any {
     if (node instanceof NumberNode) {
       return parseInt(node.number.text);
+    }
+    if (node instanceof StringNode) {
+      return node.string.text.slice(1, node.string.text.length - 1);
     }
     if (node instanceof UnarOperationNode) {
       switch (node.operator.type.name) {
@@ -134,9 +142,15 @@ export default class Parser {
     if (node instanceof BinOperationNode) {
       switch (node.operator.type.name) {
         case tokenTypesList.PLUS.name:
-          return this.run(node.leftNode) + this.run(node.rightNode);
+          if (typeof this.run(node.leftNode) === typeof this.run(node.rightNode) && typeof this.run(node.leftNode) === 'number')
+            return this.run(node.leftNode) + this.run(node.rightNode);
+          else
+            throw Error(`Несоответствие типов в операции ${node.operator.pos}`)
         case tokenTypesList.MINUS.name:
-          return this.run(node.leftNode) - this.run(node.rightNode);
+          if (typeof this.run(node.leftNode) === typeof this.run(node.rightNode) && typeof this.run(node.leftNode) === 'number')
+            return this.run(node.leftNode) - this.run(node.rightNode);
+          else
+            throw Error(`Несоответствие типов в операции ${node.operator.pos}`)
         case tokenTypesList.ASSIGN.name:
           const result = this.run(node.rightNode)
           const variableNode = <VariableNode>node.leftNode;
