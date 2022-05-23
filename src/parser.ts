@@ -116,10 +116,14 @@ export default class Parser {
   parseCode(): ExpressionNode {
     const root = new StatementNode();
     while (this.pos < this.tokens.length) {
-      const codeStringNode = this.parseExpression();
-
-      if (this.match(tokenTypesList.SEMICOLON))
+      try {
+        const codeStringNode = this.parseExpression();
+        this.require(tokenTypesList.SEMICOLON)
         root.addNode(codeStringNode);
+      } catch (e) {
+        while (this.pos < this.tokens.length && !this.match(tokenTypesList.SEMICOLON)) {
+        }
+      }
     }
     return root;
   }
