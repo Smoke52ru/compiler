@@ -1,0 +1,86 @@
+<Code> ::=
+    [<Stmt>]+
+<Block> ::=
+    '{' [<Stmt>]+ '}'
+
+<Stmt> ::= <Variable> ':=' <Bool> ';'
+    | 'if (' <Bool> ')' <Stmt>
+    | 'if (' <Bool> ')' <Stmt> ' else ' <Stmt>
+    | 'while (' <Bool> ') ' <Stmt>
+    | 'do ' <Stmt> ' while (' <Bool> ');'
+    | 'print ' <Bool> ';'
+    | 'break;'
+    | <Block>
+
+// Значения и выражения
+<Bool> ::=
+    <Bool> '||' <Join>
+    | <Join>
+<Join> ::=
+    <Join> '&&' <Equality>
+    | <Equality>
+<Equality> ::=
+    <Equality> '==' <Rel>
+    | <Equality> '!=' <Rel>
+    | <Rel>
+<Rel> ::=
+    <Expr> '<' <Expr>
+    | <Expr> '<=' <Expr>
+    | <Expr> '>' <Expr>
+    | <Expr> '>=' <Expr>
+    | <Expr>
+
+<Expr> ::=
+    <Expr> '+' <Term>
+    | <Expr> '-' <Term>
+    | <Term>
+<Term> ::=
+    <Term> '*' <Unary>
+    | <Term> '/' <Unary>
+    | <Unary>
+<Unary> ::=
+    '!' <Unary>
+    | '-' <Unary>
+    | <Factor>
+<Factor> ::=
+    '(' <Bool> ')'
+    | <Variable>
+    | <Num>
+    | <String>
+    | <True>
+    | <False>
+
+
+
+// lex
+<Semicolon> ::= ';'
+<Space> ::= '\n' | '\t' | '\r' | ' '
+<Assign> ::= ':='
+<Lpar> ::= '('
+<Rpar> ::= ')'
+<Lbrac> ::= '{'
+<Rbrac> ::= '}'
+<If> ::= 'if'
+<Then> ::= 'then'
+<Else> ::= 'else'
+<For> ::= 'for'
+<While> ::= 'while'
+<Do> ::= 'do'
+<VarDecl> ::= 'var'
+<Log> ::= 'print'
+<True> ::= 'true'
+<False> ::= 'false'
+<Break> ::= 'break'
+<Num> ::= [<Minus>]? [1-9]? [<Digit>]+
+<Minus> ::= '-'
+<Plus> ::= '+'
+
+
+<String> ::= '"' [<AnySymbol>]*  '"'
+<Variable> ::= [<Letter> | '_']+
+
+<Digit> ::= [0-9]
+<Letter> ::= <SmallLetter> | <BigLetter>
+<SmallLetter> ::= [a-z]
+<BigLetter> ::= [A-Z]
+

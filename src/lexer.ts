@@ -5,7 +5,7 @@ export default class Lexer {
   code: string;
   pos: number = 0;
   tokenList: Token[] = [];
-  errors: Array<Error> = [];
+  errors: Array<any> = [];
 
 
   constructor(code: string) {

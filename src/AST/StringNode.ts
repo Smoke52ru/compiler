@@ -1,7 +1,7 @@
-import ExpressionNode from "./ExpressionNode";
+import Node from "./Node";
 import Token from "../Token";
 
-export default class StringNode extends ExpressionNode {
+export default class StringNode extends Node {
   string: Token;
 
   constructor(string: Token) {

@@ -1,12 +1,12 @@
-import ExpressionNode from "./ExpressionNode";
+import Node from "./Node";
 import Token from "../Token";
 
-export default class UnarOperationNode extends ExpressionNode {
+export default class UnarOperationNode extends Node {
   operator: Token;
-  operand: ExpressionNode;
+  operand: Node;
 
 
-  constructor(operator: Token, operand: ExpressionNode) {
+  constructor(operator: Token, operand: Node) {
     super();
     this.operator = operator;
     this.operand = operand;

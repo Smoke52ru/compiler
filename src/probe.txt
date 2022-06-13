@@ -1,0 +1,49 @@
+print "I love programming <3";
+
+print "\nСложение и вычитание";
+sum:= 1 + 2;
+print "1 + 2 =";
+print sum;
+
+dif:= 1 - 2;
+print "1 - 2 =";
+print dif;
+
+print "\nУмножение и деление";
+print "1 + 2 * 2 =";
+print (1 + 2 * 2);
+
+print "(1 - 2 / 2) =";
+print (1 - 2 / 2);
+
+print "\nЛогические";
+print "true =";
+print true;
+
+print "true || false =";
+print (true || false);
+
+print "true && false =";
+print (true && false);
+
+print "true || true && false = ";
+print (true || true && false);
+
+print "!true = ";
+print !true;
+
+print "";
+print "1 < 2";
+print 1 < 2;
+
+print "1 > 2";
+print 1 > 2;
+
+print "1 == 2";
+print 1 == 2;
+
+print "1 != 2";
+print 1 != 2;
+
+print "1 <= 2 && !false || false";
+print 1 <= 2 && !false || false;
