@@ -47,3 +47,40 @@ print 1 != 2;
 
 print "1 <= 2 && !false || false";
 print 1 <= 2 && !false || false;
+
+print "\nBlock";
+{
+    print "~in block print~";
+}
+
+print "\nIfStatement";
+if (true)
+    print "if";
+else
+    print "else";
+
+var := 1;
+if (var >= 0){
+    if (var < 10)
+        print var;
+}else{
+    print "else";
+}
+
+print "\nWhile";
+i := 1;
+while (i<=10) {
+    print i;
+    i := i+1;
+}
+
+print "\nFor";
+for(j:=2; j<2000; j:=j*2) print j;
+
+print "\nDoWhile";
+var:= 2;
+do {
+    sqr := var*var;
+    print sqr;
+    var:= var + 1;
+} while(sqr<=100);

@@ -22,7 +22,6 @@ export const tokenTypesList = {
   'FOR': new TokenType('FOR', 'for'),
   'WHILE': new TokenType('WHILE', 'while'),
   'DO': new TokenType('DO', 'do'),
-  'VARDECL': new TokenType('VARDECL', 'var'),
   'LOG': new TokenType('PRINT', 'print'),
   'TRUE': new TokenType('TRUE', 'true'),
   'FALSE': new TokenType('FALSE', 'false'),

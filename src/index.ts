@@ -10,7 +10,10 @@ const lexer = new Lexer(code);
 lexer.lexAnalysis();
 
 // Вывод массива токенов
-// console.log(lexer.tokenList.map((token, index) => `${index}. <${token.type.name}> ${token.text}`));
+console.log(JSON.stringify(
+  lexer.tokenList
+    .map((token, index) => `${index}. <${token.type.name}> ${token.text}`)
+,null, "  "));
 
 // Парсинг в AST + синтаксический анализ
 const parser = new Parser(lexer.tokenList);

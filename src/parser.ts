@@ -8,6 +8,10 @@ import BinOperationNode from "./AST/BinOperationNode";
 import UnarOperationNode from "./AST/UnarOperationNode";
 import StringNode from "./AST/StringNode";
 import ConstantNode from "./AST/ConstantNode";
+import IfNode from "./AST/IfNode";
+import WhileNode from "./AST/WhileNode";
+import ForNode from "./AST/ForNode";
+import DoNode from "./AST/DoNode";
 
 export default class Parser {
   tokens: Token[];
@@ -76,14 +80,6 @@ export default class Parser {
   //   throw new Error(`Ожидается переменная или число на позиции ${this.pos}`);
   // }
 
-  parsePrint(): Node {
-    const token = this.match(tokenTypesList.LOG);
-    if (token) {
-      let operand = this.parseBool();
-      return new UnarOperationNode(token, operand);
-    }
-    throw new Error(`Ожидается унарный оператор ${tokenTypesList.LOG.name} на позиции ${this.pos}`);
-  }
 
   // parseParentheses(): Node {
   //   if (this.match(tokenTypesList.LPAR)) {
@@ -139,7 +135,6 @@ export default class Parser {
     if (variable) {
       const op = this.require(tokenTypesList.ASSIGN);
       const value = this.parseBool();
-      this.require(tokenTypesList.SEMICOLON);
       return new BinOperationNode(op, variable, value);
     }
     throw new Error(`Ожидается имя переменной на позиции ${this.pos}`);
@@ -256,17 +251,84 @@ export default class Parser {
     }
   }
 
+  parsePrint(): Node {
+    const token = this.match(tokenTypesList.LOG);
+    if (token) {
+      let operand = this.parseBool();
+      this.require(tokenTypesList.SEMICOLON);
+      return new UnarOperationNode(token, operand);
+    }
+    throw new Error(`Ожидается унарный оператор ${tokenTypesList.LOG.name} на позиции ${this.pos}`);
+  }
+
+  parseIf(): Node {
+    this.require(tokenTypesList.IF);
+    this.require(tokenTypesList.LPAR);
+    const condition = this.parseBool();
+    this.require(tokenTypesList.RPAR);
+    const bodyTrue = this.parseStmt();
+    if (this.match(tokenTypesList.ELSE)) {
+      const bodyFalse = this.parseStmt();
+      return new IfNode(condition, bodyTrue, bodyFalse);
+    }
+    return new IfNode(condition, bodyTrue);
+  }
+
+  parseWhile(): Node {
+    this.require(tokenTypesList.WHILE);
+    this.require(tokenTypesList.LPAR);
+    const condition = this.parseBool();
+    this.require(tokenTypesList.RPAR);
+    const body = this.parseStmt();
+    return new WhileNode(condition, body);
+  }
+
+  parseDo(): Node {
+    this.require(tokenTypesList.DO);
+    const body = this.parseStmt();
+    this.require(tokenTypesList.WHILE);
+    this.require(tokenTypesList.LPAR);
+    const condition = this.parseBool();
+    this.require(tokenTypesList.RPAR);
+    this.require(tokenTypesList.SEMICOLON)
+    return new DoNode(condition, body);
+  }
+
+  parseFor(): Node {
+    this.require(tokenTypesList.FOR);
+    this.require(tokenTypesList.LPAR);
+    const beforeAssign = this.parseAssign();
+    this.require(tokenTypesList.SEMICOLON);
+    const condition = this.parseBool();
+    this.require(tokenTypesList.SEMICOLON);
+    const afterAssign = this.parseAssign();
+    this.require(tokenTypesList.RPAR);
+    const body = this.parseStmt();
+    return new ForNode(beforeAssign, condition, afterAssign, body);
+  }
+
   parseStmt(): Node {
     switch (true) {
       case !!this.match(tokenTypesList.VARIABLE):
         this.pos -= 1;
-        return this.parseAssign();
-      case !!this.match():
+        const assign = this.parseAssign();
+        this.require(tokenTypesList.SEMICOLON);
+        return assign;
+      case !!this.match(tokenTypesList.IF):
+        this.pos -= 1;
+        return this.parseIf();
+      case !!this.match(tokenTypesList.WHILE):
+        this.pos -= 1;
+        return this.parseWhile();
+      case !!this.match(tokenTypesList.DO):
+        this.pos -= 1;
+        return this.parseDo();
+      case !!this.match(tokenTypesList.FOR):
+        this.pos -= 1;
+        return this.parseFor();
       case !!this.match(tokenTypesList.LOG):
         this.pos -= 1;
-        const token = this.parsePrint();
-        this.require(tokenTypesList.SEMICOLON);
-        return token;
+        return this.parsePrint();
       case !!this.match(tokenTypesList.LBRAC):
         this.pos -= 1;
         return this.parseBlock();
@@ -387,6 +449,32 @@ export default class Parser {
       })
       return;
     }
-    throw new Error(`Ошибка!`);
+    if (node instanceof IfNode) {
+      if (this.run(node.condition)) {
+        this.run(node.bodyTrue);
+      } else {
+        this.run(node.bodyFalse);
+      }
+      return;
+    }
+    if (node instanceof WhileNode) {
+      while (this.run(node.condition)) {
+        this.run(node.body)
+      }
+      return;
+    }
+    if (node instanceof ForNode) {
+      for (this.run(node.before); this.run(node.condition); this.run(node.after)) {
+        this.run(node.body);
+      }
+      return;
+    }
+    if (node instanceof DoNode) {
+      do {
+        this.run(node.body);
+      } while (this.run(node.condition));
+      return;
+    }
+    throw new Error(`Узел AST не нашел обработчика!`);
   }
 }
